@@ -1,3 +1,18 @@
 from django.contrib import admin
 
 # Register your models here.
+from .models import WordRecord, LessonRecord, User
+
+@admin.register(WordRecord)
+class WordRecordAdmin(admin.ModelAdmin):
+    list_display = ('id', 'en_word', 'ru_translation', 'comment')
+
+@admin.register(LessonRecord)
+class LessonRecordAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'duration', 'comment')
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('id', 'external_id', 'username', 'reg_at')
+
+
