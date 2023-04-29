@@ -40,6 +40,10 @@ class WordRecord(models.Model):
         verbose_name='Комментарий',
         default=''
     )
+    added_at = models.DateTimeField(
+        #default='2023-01-01 00:00:00',
+        auto_now_add=True
+    )
 
     class Meta:
          verbose_name = 'Слово'

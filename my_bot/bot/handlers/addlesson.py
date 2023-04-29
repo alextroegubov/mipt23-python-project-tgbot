@@ -5,8 +5,9 @@ from telebot import types
 from telebot.types import InlineKeyboardButton
 
 from functools import partial
-from datetime import datetime
 
+
+from bot.utils import date_validator, date_str_to_django, date_django_to_str
 
 def act_on_addlesson_command(message: types.Message):
     u_id = message.from_user.id
@@ -26,28 +27,13 @@ def act_on_addlesson_command(message: types.Message):
         callback=partial(get_date, lesson_record)
     )
 
-def data_validator(data_text):
-    try:
-        datetime.strptime(data_text, '%d.%m.%Y')
-    except ValueError:
-        return False
-
-    return True
-
-def data_str_to_django(data_text):
-
-    assert data_validator(data_text)
-    d = datetime.strptime(data_text, '%d.%m.%Y')
-
-    return d.strftime('%Y-%m-%d %H:%M')
-
 def get_date(lesson_record: LessonRecord, message: types.Message):
 
     u_id = message.from_user.id
     entered_date = message.text
 
     # validation of entered data
-    if not data_validator(entered_date):
+    if not date_validator(entered_date):
         text = f"Wrong data format: {entered_date}. Should be dd.mm.yyyy. Try again:"
 
         bot.send_message(u_id, text=text)
@@ -56,10 +42,10 @@ def get_date(lesson_record: LessonRecord, message: types.Message):
             callback=partial(get_date, lesson_record)
         )
         return
-    # data is ok
+
     text = f"Fine, the date is {entered_date}. Enter duration in minutes:"
     bot.send_message(u_id, text=text)
-    lesson_record.date = data_str_to_django(entered_date)
+    lesson_record.date = date_str_to_django(entered_date)
 
     bot.register_next_step_handler(
         message, 
@@ -86,7 +72,8 @@ def get_comment(lesson_record: LessonRecord, message: types.Message):
     rkm.add(btn1, btn2)
 
     text = ("Got it. Is everything alright? "
-           f"{lesson_record.duration} minutes lesson at {lesson_record.date} ({lesson_record.comment})")
+           f"{lesson_record.duration} minutes lesson at {date_django_to_str(lesson_record.date)}"
+           f"({lesson_record.comment})")
 
     msg = bot.send_message(message.from_user.id, text=text, reply_markup=rkm)
 

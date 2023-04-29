@@ -9,7 +9,7 @@ from .models import User, WordRecord, LessonRecord
 
 from bot.main_bot import bot
 
-from bot.handlers import reg, start, addword, addlesson
+from bot.handlers import reg, start, addword, addlesson, stat
 
 def index(request):
     #if request.method == "POST":
@@ -23,7 +23,7 @@ reg.register_handler_reg()
 start.register_handler_start()
 addword.register_handler_addword()
 addlesson.register_handler_addlesson()
-
+stat.register_stat_handler()
 
 @bot.message_handler(commands=['help'])
 def send_welcome(message):
