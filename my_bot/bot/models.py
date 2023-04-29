@@ -52,7 +52,7 @@ class LessonRecord(models.Model):
         on_delete=models.PROTECT,
         default=0
     )
-    duration = models.DurationField(
+    duration = models.IntegerField(
         verbose_name='Длительность'
     )
     date = models.DateTimeField(

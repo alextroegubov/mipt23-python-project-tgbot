@@ -7,11 +7,9 @@ import telebot
 from .models import User, WordRecord, LessonRecord
 
 
-
-
 from bot.main_bot import bot
 
-from bot.handlers import reg, start, addword
+from bot.handlers import reg, start, addword, addlesson
 
 def index(request):
     #if request.method == "POST":
@@ -24,6 +22,7 @@ def index(request):
 reg.register_handler_reg()
 start.register_handler_start()
 addword.register_handler_addword()
+addlesson.register_handler_addlesson()
 
 
 @bot.message_handler(commands=['help'])
