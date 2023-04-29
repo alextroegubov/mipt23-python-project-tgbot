@@ -4,7 +4,9 @@ from telebot import types
 
 del_prefix = 'del_inline_keyboard_'
 
+
 def get_del_inline_keyboard() -> types.ReplyKeyboardMarkup:
+    """ Keyboard creator"""
     ikbm = types.InlineKeyboardMarkup()
 
     ikbm.add(
@@ -20,7 +22,9 @@ def get_del_inline_keyboard() -> types.ReplyKeyboardMarkup:
 
     return ikbm
 
+
 def act_on_del_command(message: types.Message) -> None:
+    """ Reaction to /del command """
 
     u_id = message.from_user.id
 
@@ -34,7 +38,9 @@ def act_on_del_command(message: types.Message) -> None:
 
     bot.send_message(u_id, text=text, reply_markup=ikbm)
 
+
 def callback_on_del_command(call: types.CallbackQuery) -> None:
+    """ Callback for answers in /del command """
     assert call.data.startswith(del_prefix)
 
     u_id = call.message.chat.id
@@ -53,7 +59,9 @@ def callback_on_del_command(call: types.CallbackQuery) -> None:
     else:
         bot.send_message(u_id, text='smth wrong')
 
+
 def register_del_handler() -> None:
+    """ Register handlers for /del command"""
     bot.register_message_handler(commands=['del'], callback=act_on_del_command)
     bot.register_callback_query_handler(
         callback_on_del_command,
