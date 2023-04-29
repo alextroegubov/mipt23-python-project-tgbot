@@ -31,8 +31,9 @@ def get_user_name(message: types.Message) -> None:
 
     bot.reply_to(
         message.from_user.id,
-        (f"Successfully registered user <i>{name}</i>"
-         "Now you can use all functions of the bot. Use \help for more details.")
+        (f"Successfully registered user <b>{name}</b>"
+         "Now you can use all functions of the bot. Use \help for more details."),
+         parse_mode='HTML'
     )
 
 
