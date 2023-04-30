@@ -1,4 +1,5 @@
 from datetime import datetime
+from telebot import types
 
 def date_validator(data_text):
     try:
@@ -16,4 +17,22 @@ def date_str_to_django(data_text):
     return d.strftime('%Y-%m-%d %H:%M')
 
 def date_django_to_str(date):
-    return date.strftime('%d-%m-%Y')
+    return datetime.strptime(date, '%Y-%m-%d %H:%M').strftime('%d-%m-%Y')
+
+def get_yes_no_inline_keyboard(prefix: str, yes_text: str, no_text: str
+) -> types.ReplyKeyboardMarkup:
+    """ Keyboard creator"""
+    ikbm = types.InlineKeyboardMarkup()
+
+    ikbm.add(
+        types.InlineKeyboardButton(
+            text=yes_text,
+            callback_data=prefix + 'yes'
+        ),
+        types.InlineKeyboardButton(
+            text=no_text,
+            callback_data=prefix + 'no'
+        )
+    )
+
+    return ikbm

@@ -1,32 +1,14 @@
 from bot.main_bot import bot
 from bot.models import User, WordRecord
+from bot.utils import get_yes_no_inline_keyboard
 
 from telebot import types
-from functools import partial
 from typing import Dict
 
-comment_prefix = 'comment_inline_keyboard_'
-confirm_prefix = 'confirm_inline_keyabord_'
+comment_prefix = 'comment_addword_inline_keyboard_'
+confirm_prefix = 'confirm_addword_inline_keyabord_'
 
 g_input_user_data: Dict[int, WordRecord] = {}
-
-def get_yes_no_inline_keyboard(prefix: str, yes_text: str, no_text: str
-) -> types.ReplyKeyboardMarkup:
-    """ Keyboard creator"""
-    ikbm = types.InlineKeyboardMarkup()
-
-    ikbm.add(
-        types.InlineKeyboardButton(
-            text=yes_text,
-            callback_data=prefix + 'yes'
-        ),
-        types.InlineKeyboardButton(
-            text=no_text,
-            callback_data=prefix + 'no'
-        )
-    )
-
-    return ikbm
 
 def act_on_addword_command(message: types.Message) -> None:
     """ Primary handler for /addword command"""
@@ -63,7 +45,8 @@ def get_word_record_en_word(message: types.Message) -> None:
 
     bot.register_next_step_handler(
         message, 
-        callback=get_word_record_ru_translation
+        callback=get_word_record_ru_translation,
+        parse_mode='HTML'
     )
 
 def get_word_record_ru_translation(message: types.Message) -> None:
@@ -138,8 +121,12 @@ def callback_on_cofirm_add_word(call: types.CallbackQuery):
     if answer == 'yes':
         g_input_user_data[u_id].save()
         text = f"Great! {g_input_user_data[u_id].en_word} is added to your dictionary."
+
     elif answer == 'no':
-        text = f"Sorry... Let's try again."
+        text = f"Sorry... Let's try again. /addword"
+
+    # remove tmp input data
+    g_input_user_data.pop(u_id)
 
     bot.send_message(
         u_id, 
