@@ -41,7 +41,6 @@ class WordRecord(models.Model):
         default=''
     )
     added_at = models.DateTimeField(
-        #default='2023-01-01 00:00:00',
         auto_now_add=True
     )
 
@@ -71,3 +70,26 @@ class LessonRecord(models.Model):
     class Meta:
          verbose_name = 'Занятие'
          verbose_name_plural = 'Занятия'
+
+class GameRecord(models.Model):
+    user = models.ForeignKey(
+        to='bot.User',
+        verbose_name='Пользователь',
+        on_delete=models.PROTECT,
+        default=0
+    )
+    date = models.DateTimeField(
+        verbose_name='Дата',
+        auto_now_add=True
+    )
+    n_questions = models.PositiveIntegerField(
+        verbose_name='Число вопросов',
+    )
+
+    n_answers = models.PositiveIntegerField(
+        verbose_name='Число вопросов',
+    )
+
+    class Meta:
+         verbose_name = 'Игра'
+         verbose_name_plural = 'Игры'

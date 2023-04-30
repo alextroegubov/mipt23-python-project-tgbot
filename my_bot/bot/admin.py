@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import WordRecord, LessonRecord, User
+from .models import WordRecord, LessonRecord, User, GameRecord
 
 @admin.register(WordRecord)
 class WordRecordAdmin(admin.ModelAdmin):
@@ -14,5 +14,9 @@ class LessonRecordAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'external_id', 'username', 'reg_at')
+
+@admin.register(GameRecord)
+class GameRecordAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'date', 'n_questions', 'n_answers')
 
 
