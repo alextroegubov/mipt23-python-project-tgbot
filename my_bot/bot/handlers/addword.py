@@ -55,12 +55,12 @@ def get_word_record_en_word(message: types.Message) -> None:
 
     if WordRecord.objects.filter(user=user, en_word=message.text.lower()).exists():
         word = WordRecord.objects.get(user=user, en_word=message.text.lower())
-        text =  ("Такое слово уже есть в словаре 🙃"
+        text =  ("Такое слово уже есть в словаре 🙃\n"
                 f"Слово: <i>{word.en_word}</i>\n"
                 f"Перевод: <i>{word.ru_translation}</i>\n" +
                 f"[<i>{word.comment}</i>]")
 
-        bot.send_message(u_id, text=text, parse_mode='HTML', reply_markup=start_menu)
+        bot.send_message(u_id, text=text, parse_mode='HTML', reply_markup=start_menu())
         return
 
     text = f"Записал <i>{message.text}</i>👌 Введите перевод:"
@@ -83,7 +83,7 @@ def get_word_record_ru_translation(message: types.Message) -> None:
     entered_data = message.text
     # validation of entered data
     if not word_validator(entered_data):
-        text = (f"Неправильный формат (<b>{entered_data}</b>)😓"
+        text = (f"Неправильный формат (<b>{entered_data}</b>)😓 "
                  "Слово может содержать только буквы и цифры.\n"
                  "Давайте еще раз:")
 

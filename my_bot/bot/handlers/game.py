@@ -41,15 +41,14 @@ g_game_user_data: Dict[int, GameMetaData] = {}
 
 def act_on_game_command(u_id: int) -> None:
     """ Handler for game command"""
-
-    n_words = WordRecord.objects.count()
+    user = User.objects.get(external_id=u_id)
+    n_words = WordRecord.objects.filter(user=user).count()
     if n_words < CONST_N_CHOICES:
         text = (f"В словаре слишком мало слов ({n_words}) 😓 "
                 "Должно быть <u>минимум 5 слов</u>.")
         bot.send_message(u_id, text=text, parse_mode='HTML')
         return
 
-    user = User.objects.get(external_id=u_id)
     text = "Давай повторять английские слова 🧠"
     bot.send_message(u_id, text=text)
 
