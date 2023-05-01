@@ -10,9 +10,8 @@ confirm_prefix = 'confirm_addword_inline_keyabord_'
 
 g_input_user_data: Dict[int, WordRecord] = {}
 
-def act_on_addword_command(message: types.Message) -> None:
+def act_on_addword_command(u_id) -> None:
     """ Primary handler for /addword command"""
-    u_id = message.from_user.id
 
     if not User.objects.filter(external_id=u_id):
         text = "Please, register first. /reg"
@@ -22,13 +21,13 @@ def act_on_addword_command(message: types.Message) -> None:
     user = User.objects.get(external_id=u_id)
 
     text = "Let's fill your dictionary🧐 Enter new word:"
-    bot.send_message(u_id, text=text)
+    msg = bot.send_message(u_id, text=text)
 
     global g_input_user_data
     g_input_user_data[u_id] = WordRecord(user=user)
 
     bot.register_next_step_handler(
-        message, 
+        msg, 
         callback=get_word_record_en_word
     )
 
@@ -133,6 +132,5 @@ def callback_on_cofirm_add_word(call: types.CallbackQuery):
     )
 
 def register_handler_addword():
-    bot.register_message_handler(commands=['addword'], callback=act_on_addword_command)
     bot.register_callback_query_handler(callback=callback_on_cofirm_add_word, func=lambda call: call.data.startswith(confirm_prefix))
     bot.register_callback_query_handler(callback=callback_on_comment, func=lambda call: call.data.startswith(comment_prefix))

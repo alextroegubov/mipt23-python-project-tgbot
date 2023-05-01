@@ -14,8 +14,7 @@ confirm_prefix = 'confirm_addlesson_inline_keyabord_'
 
 g_input_user_data: Dict[int, LessonRecord] = {}
 
-def act_on_addlesson_command(message: types.Message):
-    u_id = message.from_user.id
+def act_on_addlesson_command(u_id):
 
     if not User.objects.filter(external_id=u_id):
         text = "Please, register first. /reg"
@@ -24,13 +23,13 @@ def act_on_addlesson_command(message: types.Message):
 
     user = User.objects.get(external_id=u_id)
     text = "Let's record new lesson. Enter the date of the lesson (dd.mm.yyyy):"
-    bot.send_message(u_id, text=text)
+    msg = bot.send_message(u_id, text=text)
 
     global g_input_user_data
     g_input_user_data[u_id] = LessonRecord(user=user)
 
     bot.register_next_step_handler(
-        message, 
+        msg, 
         callback=get_date
     )
 

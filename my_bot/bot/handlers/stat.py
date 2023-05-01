@@ -30,8 +30,7 @@ def get_stat_inline_keyboard() -> types.ReplyKeyboardMarkup:
 
     return ikbm
 
-def act_on_stat_command(message: types.Message) -> None:
-    u_id = message.from_user.id
+def act_on_stat_command(u_id: int) -> None:
 
     if not User.objects.filter(external_id=u_id):
         text = "Please, register first. /reg"

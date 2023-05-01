@@ -33,8 +33,7 @@ class GameMetaData():
 
 g_game_user_data: Dict[int, GameMetaData] = {}
 
-def act_on_game_command(message: types.Message):
-    u_id = message.from_user.id
+def act_on_game_command(u_id) -> None:
 
     if not User.objects.filter(external_id=u_id):
         text = "Please, register first. /reg"
@@ -62,7 +61,6 @@ def act_on_game_command(message: types.Message):
     # select 10 words:
     words_idx = list(WordRecord.objects.filter(user=user).values_list('pk', flat=True))
 
-    print(words_idx)
     g_game_user_data[u_id].words = random.sample(words_idx, min(g_game_user_data[u_id].n_questions, len(words_idx)))
 
     g_game_user_data[u_id].n_questions = len(g_game_user_data[u_id].words)
