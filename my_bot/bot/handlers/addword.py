@@ -37,7 +37,7 @@ def get_word_record_en_word(message: types.Message) -> None:
     u_id = message.from_user.id
     user = User.objects.get(external_id=u_id)
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     entered_data = message.text
@@ -55,7 +55,7 @@ def get_word_record_en_word(message: types.Message) -> None:
 
     if WordRecord.objects.filter(user=user, en_word=message.text.lower()).exists():
         word = WordRecord.objects.get(user=user, en_word=message.text.lower())
-        text = ( "Такое слово уже есть в словаре 🙃"
+        text =  ("Такое слово уже есть в словаре 🙃"
                 f"Слово: <i>{word.en_word}</i>\n"
                 f"Перевод: <i>{word.ru_translation}</i>\n" +
                 f"[<i>{word.comment}</i>]")
@@ -77,7 +77,7 @@ def get_word_record_ru_translation(message: types.Message) -> None:
     """ Get translation from message """
     u_id = message.from_user.id
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     entered_data = message.text
@@ -121,7 +121,7 @@ def get_word_record_comment(message: types.Message) -> None:
     """ Get comment from the message"""
     u_id = message.from_user.id
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     g_input_user_data[u_id].comment = message.text
@@ -131,7 +131,7 @@ def get_word_record_comment(message: types.Message) -> None:
 
 def confirm_add_word(u_id: int) -> None:
     """ Show confirm keyboard"""
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     word = g_input_user_data[u_id]
@@ -156,7 +156,7 @@ def callback_on_cofirm_add_word(call: types.CallbackQuery) -> None:
     u_id = call.message.chat.id
     answer = call.data[len(CONFIRM_PREFIX):]
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     if answer == 'yes':

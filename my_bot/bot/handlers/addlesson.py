@@ -32,7 +32,7 @@ def get_date(message: types.Message) -> None:
     """ Get date from the message"""
     u_id = message.from_user.id
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     entered_date = message.text
@@ -59,7 +59,7 @@ def get_duration(message: types.Message) -> None:
     """ Get duration from the message"""
     u_id = message.from_user.id
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     entered_data = message.text
@@ -88,7 +88,7 @@ def callback_on_comment(call: types.CallbackQuery) -> None:
     u_id = call.message.chat.id
     answer = call.data[len(COMMENT_PREFIX):]
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     if answer == 'yes':
@@ -106,7 +106,7 @@ def get_lesson_record_comment(message: types.Message) -> None:
     """ Get comment from the message """
     u_id = message.from_user.id
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     g_input_user_data[u_id].comment = message.text
@@ -116,7 +116,7 @@ def get_lesson_record_comment(message: types.Message) -> None:
 def confirm_add_lesson(u_id: int) -> None:
     """ Show confirm keyboard"""
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     lesson = g_input_user_data[u_id]
@@ -140,7 +140,7 @@ def callback_on_cofirm_add_lesson(call: types.CallbackQuery) -> None:
     u_id = call.message.chat.id
     answer = call.data[len(CONFIRM_PREFIX):]
 
-    if not u_id in g_input_user_data:
+    if u_id not in g_input_user_data:
         return
 
     if answer == 'yes':

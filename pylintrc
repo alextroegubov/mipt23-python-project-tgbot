@@ -1,0 +1,3 @@
+[Master]
+ignore=migrations
+load-plugins=pylint_django

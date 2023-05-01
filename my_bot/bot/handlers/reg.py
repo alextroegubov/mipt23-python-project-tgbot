@@ -4,6 +4,7 @@ from bot.main_bot import bot
 from bot.models import User
 from bot.utils import start_menu, START_TEXT
 
+
 def act_on_reg_command(message: types.Message) -> None:
     """ Primary handler to /reg command"""
 
@@ -33,13 +34,14 @@ def get_user_name(message: types.Message) -> None:
     bot.reply_to(
         message,
         (f"Добро пожаловать, <b>{name}</b> 🖐"
-          "Теперь ты можешь использовать все функции бота 💪\n"
-          "Для справки используй /help "),
-         parse_mode='HTML'
+         "Теперь ты можешь использовать все функции бота 💪\n"
+         "Для справки используй /help "),
+        parse_mode='HTML'
     )
 
     u_id = message.chat.id
-    bot.send_message(u_id, text=START_TEXT, parse_mode='HTML', reply_markup=start_menu())
+    bot.send_message(u_id, text=START_TEXT, parse_mode='HTML',
+                     reply_markup=start_menu())
 
 
 def register_handler_reg() -> None:
