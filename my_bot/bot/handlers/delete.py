@@ -5,7 +5,7 @@ from telebot import types
 del_prefix = 'del_inline_keyboard_'
 
 
-def get_del_inline_keyboard() -> types.ReplyKeyboardMarkup:
+def get_del_inline_keyboard() -> types.InlineKeyboardMarkup:
     """ Keyboard creator"""
     ikbm = types.InlineKeyboardMarkup()
 

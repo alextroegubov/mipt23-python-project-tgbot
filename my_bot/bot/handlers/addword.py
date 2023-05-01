@@ -41,12 +41,11 @@ def get_word_record_en_word(message: types.Message) -> None:
 
     text = f"Fine, <i>{message.text}</i> is writen👌 Enter translation:"
 
-    bot.send_message(u_id, text=text)
+    bot.send_message(u_id, text=text, parse_mode='HTML')
 
     bot.register_next_step_handler(
         message, 
-        callback=get_word_record_ru_translation,
-        parse_mode='HTML'
+        callback=get_word_record_ru_translation
     )
 
 def get_word_record_ru_translation(message: types.Message) -> None:
