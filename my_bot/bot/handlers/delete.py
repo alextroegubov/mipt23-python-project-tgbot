@@ -1,6 +1,6 @@
 from telebot import types
 from bot.main_bot import bot
-from bot.models import User, LessonRecord, WordRecord
+from bot.models import User, LessonRecord, WordRecord, GameRecord
 
 del_prefix = 'del_inline_keyboard_'
 
@@ -50,6 +50,7 @@ def callback_on_del_command(call: types.CallbackQuery) -> None:
     if answer == 'yes':
         LessonRecord.objects.filter(user=user).delete()
         WordRecord.objects.filter(user=user).delete()
+        GameRecord.objects.filter(user=user).delete()
         user.delete()
 
         bot.send_message(u_id, text='Ваш профиль удален 😵')

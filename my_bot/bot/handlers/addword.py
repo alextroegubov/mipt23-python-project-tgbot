@@ -3,7 +3,9 @@ from typing import Dict
 
 from bot.main_bot import bot
 from bot.models import User, WordRecord
-from bot.utils import get_yes_no_inline_keyboard
+from bot.utils import get_yes_no_inline_keyboard, start_menu
+from bot.utils import int_validator, word_validator
+
 
 # prefixes to distinguish between callback queris
 comment_prefix = 'comment_addword_inline_keyboard_'
@@ -33,12 +35,33 @@ def act_on_addword_command(u_id: int) -> None:
 def get_word_record_en_word(message: types.Message) -> None:
     """ Get enlish word from message"""
     u_id = message.from_user.id
+    user = User.objects.get(external_id=u_id)
     global g_input_user_data
 
     if not (u_id in g_input_user_data):
         return
 
-    g_input_user_data[u_id].en_word = message.text
+    entered_data = message.text
+    # validation of entered data
+    if not word_validator(entered_data):
+        text = (f"Неправильный формат (<b>{entered_data}</b>)😓 Слово может содержать только буквы и цифры.\n"
+                 "Давайте еще раз:")
+
+        msg = bot.send_message(u_id, text=text, parse_mode='HTML')
+        bot.register_next_step_handler(msg, callback=get_word_record_en_word)
+        return
+
+    g_input_user_data[u_id].en_word = message.text.lower()
+
+    if WordRecord.objects.filter(user=user, en_word=message.text.lower()).exists():
+        word = WordRecord.objects.get(user=user, en_word=message.text.lower())
+        text = ( "Такое слово уже есть в словаре 🙃"
+                f"Слово: <i>{word.en_word}</i>\n"
+                f"Перевод: <i>{word.ru_translation}</i>\n" +
+                f"[<i>{word.comment}</i>]")
+
+        bot.send_message(u_id, text=text, parse_mode='HTML', reply_markup=start_menu)
+        return
 
     text = f"Записал <i>{message.text}</i>👌 Введите перевод:"
 
@@ -58,13 +81,23 @@ def get_word_record_ru_translation(message: types.Message) -> None:
     if not (u_id in g_input_user_data):
         return
 
+    entered_data = message.text
+    # validation of entered data
+    if not word_validator(entered_data):
+        text = (f"Неправильный формат (<b>{entered_data}</b>)😓 Слово может содержать только буквы и цифры.\n"
+                 "Давайте еще раз:")
+
+        msg = bot.send_message(u_id, text=text, parse_mode='HTML')
+        bot.register_next_step_handler(msg, callback=get_word_record_ru_translation)
+        return
+
     g_input_user_data[u_id].ru_translation = message.text
+
+    text = f"Перевод записан <i>{message.text}</i>👌 Добавим пояснение?"
 
     yes_text = 'Ну разумеется 😉'
     no_text = 'Неа 🙄'
     kb = get_yes_no_inline_keyboard(comment_prefix, yes_text, no_text)
-
-    text = f"Перевод записан <i>{message.text}</i>👌 Добавим пояснение?"
 
     bot.send_message(u_id, text=text, reply_markup=kb, parse_mode='HTML')
 
@@ -82,8 +115,6 @@ def callback_on_comment(call: types.CallbackQuery) -> None:
     elif answer == 'no':
         msg = bot.send_message(u_id, text="Ну ладно...")
         confirm_add_word(u_id)
-    else:
-        bot.send_message(u_id, text='smth wrong')
 
 
 def get_word_record_comment(message: types.Message) -> None:
@@ -141,7 +172,7 @@ def callback_on_cofirm_add_word(call: types.CallbackQuery):
     # remove tmp input data
     g_input_user_data.pop(u_id)
 
-    bot.send_message(u_id, text=text, parse_mode='HTML')
+    bot.send_message(u_id, text=text, parse_mode='HTML', reply_markup=start_menu())
 
 
 def register_handler_addword() -> None:

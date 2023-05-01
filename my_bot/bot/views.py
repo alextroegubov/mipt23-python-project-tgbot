@@ -4,12 +4,8 @@ from django.http import HttpResponse
 
 import telebot
 
-from .models import User, WordRecord, LessonRecord
-
-
 from bot.main_bot import bot
-
-from bot.handlers import reg, start, addword, addlesson, stat, delete, game
+from bot.handlers import reg, start, addword, addlesson, stat, delete
 
 def index(request):
     #if request.method == "POST":
@@ -25,22 +21,10 @@ addword.register_handler_addword()
 addlesson.register_handler_addlesson()
 stat.register_stat_handler()
 delete.register_del_handler()
-game.register_game_handler()
 
 
 @bot.message_handler(commands=['help'])
 def send_welcome(message):
-    # TBD
 	bot.reply_to(message, "Howdy, how are you doing?")
-
-
-
-
-
-
-# @bot.message_handler(func=lambda m: True)
-# def echo_all(message):
-# 	bot.reply_to(message, '<b>message.text</b>', parse_mode='HTML')
-
 
 bot.polling(non_stop=True)

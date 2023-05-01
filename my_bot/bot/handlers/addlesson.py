@@ -5,7 +5,8 @@ from bot.main_bot import bot
 from bot.models import User, LessonRecord
 
 from bot.utils import date_validator, date_str_to_django, date_django_to_str
-from bot.utils import get_yes_no_inline_keyboard
+from bot.utils import get_yes_no_inline_keyboard, start_menu
+from bot.utils import int_validator
 
 # prefixes for queries handlers
 comment_prefix = 'comment_addlesson_inline_keyboard_'
@@ -44,8 +45,8 @@ def get_date(message: types.Message) -> None:
                 "Должно быть <u>дд.мм.гггг</u>"
                 "Давайте еще раз:")
 
-        bot.send_message(u_id, text=text, parse_mode='HTML')
-        bot.register_next_step_handler(message, callback=get_date)
+        msg = bot.send_message(u_id, text=text, parse_mode='HTML')
+        bot.register_next_step_handler(msg, callback=get_date)
         return
 
     text = f"Записал <i>{entered_date}</i> 👌\nВведите длительность урока в минутах:"
@@ -64,7 +65,16 @@ def get_duration(message: types.Message) -> None:
     if not (u_id in g_input_user_data):
         return
 
-    g_input_user_data[u_id].duration = message.text
+    entered_data = message.text
+
+    if not int_validator(entered_data):
+        text = (f"Неправильный формат числа (<b>{entered_data}</b>)"
+                 "Давайте еще раз:")
+        msg = bot.send_message(u_id, text=text, parse_mode='HTML')
+        bot.register_next_step_handler(msg, callback=get_duration)
+        return
+
+    g_input_user_data[u_id].duration = int(message.text)
 
     yes_text = 'Ну разумеется 😉'
     no_text = 'Неа 🙄'
@@ -151,7 +161,7 @@ def callback_on_cofirm_add_lesson(call: types.CallbackQuery) -> None:
     # remove tmp input data
     g_input_user_data.pop(u_id)
 
-    bot.send_message(u_id, text=text, parse_mode='HTML')
+    bot.send_message(u_id, text=text, parse_mode='HTML', reply_markup=start_menu())
 
 
 def register_handler_addlesson() -> None:

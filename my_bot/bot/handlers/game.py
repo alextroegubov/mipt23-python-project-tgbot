@@ -7,6 +7,7 @@ from functools import partial
 
 from bot.main_bot import bot
 from bot.models import User, WordRecord, GameRecord
+from bot.utils import start_menu, start_text
 
 # prefixes for callback queris
 select_prefix = 'select_game_inline_keyboard_'
@@ -44,8 +45,8 @@ def act_on_game_command(u_id) -> None:
 
     n_words = WordRecord.objects.count()
     if n_words < CONST_N_CHOICES:
-        text = ("В словаре слишком мало слов 😓({n_words}). "
-                "Должно быть <u>минимум 5 слов</u>.")
+        text = (f"В словаре слишком мало слов ({n_words}) 😓 "
+                 "Должно быть <u>минимум 5 слов</u>.")
         bot.send_message(u_id, text=text, parse_mode='HTML')
         return
 
@@ -150,7 +151,8 @@ def send_score(u_id: int) -> None:
         text = 'Хороший результат 👍'
     elif ratio > 0.8:
         text = 'Отличный результат 👏'
-    bot.send_message(u_id, text=result + text)
+    bot.send_message(u_id, text=result + text, reply_markup=start_menu())
 
     GameRecord(user=user, n_questions=game.n_asked_questions,
                n_answers=game.n_right_questions).save()
+

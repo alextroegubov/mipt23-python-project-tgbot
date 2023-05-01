@@ -1,41 +1,16 @@
 from telebot import types
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot.models import User
 from bot.main_bot import bot
+
+from bot.utils import start_menu, start_menu_prefix
 
 from bot.handlers.addword import act_on_addword_command
 from bot.handlers.addlesson import act_on_addlesson_command
 from bot.handlers.game import act_on_game_command
 from bot.handlers.stat import act_on_stat_command
 
-start_menu_prefix = 'start_menu_keyboard_'
 
-
-def start_menu() -> InlineKeyboardMarkup:
-    """Start menu keyboard"""
-    ikbm = InlineKeyboardMarkup(row_width=1)
-
-    ikbm.add(
-        InlineKeyboardButton(
-            text='Добавить новое слово',
-            callback_data=start_menu_prefix + 'addword'
-        ),
-        InlineKeyboardButton(
-            text='Записать урок',
-            callback_data=start_menu_prefix + 'addlesson'
-        ),
-        InlineKeyboardButton(
-            text='Повторять слова',
-            callback_data=start_menu_prefix + 'game'
-        ),
-        InlineKeyboardButton(
-            text='Статистика',
-            callback_data=start_menu_prefix + 'stat'
-        )
-    )
-
-    return ikbm
 
 
 def act_on_start_command(message: types.Message) -> None:

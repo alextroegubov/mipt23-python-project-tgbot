@@ -2,6 +2,7 @@ from bot.main_bot import bot
 from bot.models import User
 from telebot import types
 
+from bot.utils import start_menu, start_text
 
 def act_on_reg_command(message: types.Message) -> None:
     """ Primary handler to /reg command"""
@@ -11,16 +12,16 @@ def act_on_reg_command(message: types.Message) -> None:
 
         bot.send_message(
             message.from_user.id,
-            (f"<b>{user.username}</b>, you are already registered😅"
-             "To delete your profile, use /del"),
+            (f"<b>{user.username}</b>, вы уже зарегистрированы😅\n"
+             "Для удаления профиля используйте /del"),
             parse_mode='HTML'
         )
     else:
-        bot.send_message(
+        msg = bot.send_message(
             message.from_user.id,
-            "Let's start the registration! What is your name?"
+            "Начнем регистрацию😉 Как вас зовут?"
         )
-        bot.register_next_step_handler(message, callback=get_user_name)
+        bot.register_next_step_handler(msg, callback=get_user_name)
 
 
 def get_user_name(message: types.Message) -> None:
@@ -30,11 +31,15 @@ def get_user_name(message: types.Message) -> None:
     new_user.save()
 
     bot.reply_to(
-        message.from_user.id,
-        (f"Successfully registered user <b>{name}</b>"
-         "Now you can use all functions of the bot. Use \help for more details."),
+        message,
+        (f"Добро пожаловать, <b>{name}</b> 🖐"
+          "Теперь ты можешь использовать все функции бота 💪\n"
+          "Для справки используй /help "),
          parse_mode='HTML'
     )
+
+    u_id = message.chat.id
+    bot.send_message(u_id, text=start_text, parse_mode='HTML', reply_markup=start_menu())
 
 
 def register_handler_reg() -> None:
