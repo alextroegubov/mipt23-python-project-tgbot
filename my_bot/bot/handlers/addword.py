@@ -1,15 +1,16 @@
-from telebot import types  # type: ignore
+""" Module for adding words"""
 from typing import Dict
+from telebot import types  # type: ignore
 
 from bot.main_bot import bot
 from bot.models import User, WordRecord
 from bot.utils import get_yes_no_inline_keyboard, start_menu
-from bot.utils import int_validator, word_validator
+from bot.utils import word_validator
 
 
 # prefixes to distinguish between callback queris
-comment_prefix = 'comment_addword_inline_keyboard_'
-confirm_prefix = 'confirm_addword_inline_keyabord_'
+COMMENT_PREFIX = 'comment_addword_inline_keyboard_'
+CONFIRM_PREFIX = 'confirm_addword_inline_keyabord_'
 
 # to store data before saving in db
 g_input_user_data: Dict[int, WordRecord] = {}
@@ -23,7 +24,6 @@ def act_on_addword_command(u_id: int) -> None:
     text = "Ура, пополняем словарь😃 Введите новое слово:"
     msg = bot.send_message(u_id, text=text)
 
-    global g_input_user_data
     g_input_user_data[u_id] = WordRecord(user=user)
 
     bot.register_next_step_handler(
@@ -36,15 +36,15 @@ def get_word_record_en_word(message: types.Message) -> None:
     """ Get enlish word from message"""
     u_id = message.from_user.id
     user = User.objects.get(external_id=u_id)
-    global g_input_user_data
 
-    if not (u_id in g_input_user_data):
+    if not u_id in g_input_user_data:
         return
 
     entered_data = message.text
     # validation of entered data
     if not word_validator(entered_data):
-        text = (f"Неправильный формат (<b>{entered_data}</b>)😓 Слово может содержать только буквы и цифры.\n"
+        text = (f"Неправильный формат (<b>{entered_data}</b>)😓"
+                 "Слово может содержать только буквы и цифры.\n"
                  "Давайте еще раз:")
 
         msg = bot.send_message(u_id, text=text, parse_mode='HTML')
@@ -76,15 +76,15 @@ def get_word_record_en_word(message: types.Message) -> None:
 def get_word_record_ru_translation(message: types.Message) -> None:
     """ Get translation from message """
     u_id = message.from_user.id
-    global g_input_user_data
 
-    if not (u_id in g_input_user_data):
+    if not u_id in g_input_user_data:
         return
 
     entered_data = message.text
     # validation of entered data
     if not word_validator(entered_data):
-        text = (f"Неправильный формат (<b>{entered_data}</b>)😓 Слово может содержать только буквы и цифры.\n"
+        text = (f"Неправильный формат (<b>{entered_data}</b>)😓"
+                 "Слово может содержать только буквы и цифры.\n"
                  "Давайте еще раз:")
 
         msg = bot.send_message(u_id, text=text, parse_mode='HTML')
@@ -97,17 +97,17 @@ def get_word_record_ru_translation(message: types.Message) -> None:
 
     yes_text = 'Ну разумеется 😉'
     no_text = 'Неа 🙄'
-    kb = get_yes_no_inline_keyboard(comment_prefix, yes_text, no_text)
+    keyboard = get_yes_no_inline_keyboard(COMMENT_PREFIX, yes_text, no_text)
 
-    bot.send_message(u_id, text=text, reply_markup=kb, parse_mode='HTML')
+    bot.send_message(u_id, text=text, reply_markup=keyboard, parse_mode='HTML')
 
 
 def callback_on_comment(call: types.CallbackQuery) -> None:
     """ Callback on question about comment"""
-    assert call.data.startswith(comment_prefix)
+    assert call.data.startswith(COMMENT_PREFIX)
 
     u_id = call.message.chat.id
-    answer = call.data[len(comment_prefix):]
+    answer = call.data[len(COMMENT_PREFIX):]
 
     if answer == 'yes':
         msg = bot.send_message(u_id, text="Тогда вводите пояснение 😂")
@@ -120,9 +120,8 @@ def callback_on_comment(call: types.CallbackQuery) -> None:
 def get_word_record_comment(message: types.Message) -> None:
     """ Get comment from the message"""
     u_id = message.from_user.id
-    global g_input_user_data
 
-    if not (u_id in g_input_user_data):
+    if not u_id in g_input_user_data:
         return
 
     g_input_user_data[u_id].comment = message.text
@@ -132,8 +131,7 @@ def get_word_record_comment(message: types.Message) -> None:
 
 def confirm_add_word(u_id: int) -> None:
     """ Show confirm keyboard"""
-    global g_input_user_data
-    if not (u_id in g_input_user_data):
+    if not u_id in g_input_user_data:
         return
 
     word = g_input_user_data[u_id]
@@ -146,20 +144,19 @@ def confirm_add_word(u_id: int) -> None:
 
     yes_text = "Да, все так 👍"
     no_text = "Я вводил другое 👎"
-    kb = get_yes_no_inline_keyboard(confirm_prefix, yes_text, no_text)
+    keyboard = get_yes_no_inline_keyboard(CONFIRM_PREFIX, yes_text, no_text)
 
-    bot.send_message(u_id, text=text, reply_markup=kb, parse_mode='HTML')
+    bot.send_message(u_id, text=text, reply_markup=keyboard, parse_mode='HTML')
 
 
 def callback_on_cofirm_add_word(call: types.CallbackQuery) -> None:
     """ Callback on confirmation question"""
-    assert call.data.startswith(confirm_prefix)
-    global g_input_user_data
+    assert call.data.startswith(CONFIRM_PREFIX)
 
     u_id = call.message.chat.id
-    answer = call.data[len(confirm_prefix):]
+    answer = call.data[len(CONFIRM_PREFIX):]
 
-    if not (u_id in g_input_user_data):
+    if not u_id in g_input_user_data:
         return
 
     if answer == 'yes':
@@ -167,7 +164,7 @@ def callback_on_cofirm_add_word(call: types.CallbackQuery) -> None:
         text = f"Супер! <i>{g_input_user_data[u_id].en_word}</i> успешно добавлено в словарь 🤝"
 
     elif answer == 'no':
-        text = f"Упс... Давайте попробуем еще раз 👉👈"
+        text = "Упс... Давайте попробуем еще раз 👉👈"
 
     # remove tmp input data
     g_input_user_data.pop(u_id)
@@ -179,9 +176,9 @@ def register_handler_addword() -> None:
     """ register handlers for addword command"""
     bot.register_callback_query_handler(
         callback=callback_on_cofirm_add_word,
-        func=lambda call: call.data.startswith(confirm_prefix)
+        func=lambda call: call.data.startswith(CONFIRM_PREFIX)
     )
     bot.register_callback_query_handler(
         callback=callback_on_comment,
-        func=lambda call: call.data.startswith(comment_prefix)
+        func=lambda call: call.data.startswith(COMMENT_PREFIX)
     )

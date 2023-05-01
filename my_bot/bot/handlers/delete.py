@@ -1,8 +1,10 @@
+""" Module for delete command"""
+
 from telebot import types  # type: ignore
 from bot.main_bot import bot
 from bot.models import User, LessonRecord, WordRecord, GameRecord
 
-del_prefix = 'del_inline_keyboard_'
+DEL_PREFIX = 'del_inline_keyboard_'
 
 
 def get_del_inline_keyboard() -> types.InlineKeyboardMarkup:
@@ -12,11 +14,11 @@ def get_del_inline_keyboard() -> types.InlineKeyboardMarkup:
     ikbm.add(
         types.InlineKeyboardButton(
             text='Да, сноси 👹',
-            callback_data=del_prefix + 'yes'
+            callback_data=DEL_PREFIX + 'yes'
         ),
         types.InlineKeyboardButton(
             text='Нет, оставь 😫',
-            callback_data=del_prefix + 'no'
+            callback_data=DEL_PREFIX + 'no'
         )
     )
 
@@ -41,11 +43,11 @@ def act_on_del_command(message: types.Message) -> None:
 
 def callback_on_del_command(call: types.CallbackQuery) -> None:
     """ Callback for answers in /del command """
-    assert call.data.startswith(del_prefix)
+    assert call.data.startswith(DEL_PREFIX)
 
     u_id = call.message.chat.id
     user = User.objects.get(external_id=u_id)
-    answer = call.data[len(del_prefix):]
+    answer = call.data[len(DEL_PREFIX):]
 
     if answer == 'yes':
         LessonRecord.objects.filter(user=user).delete()
@@ -64,5 +66,5 @@ def register_del_handler() -> None:
     bot.register_message_handler(commands=['del'], callback=act_on_del_command)
     bot.register_callback_query_handler(
         callback_on_del_command,
-        lambda call: call.data.startswith(del_prefix),
+        lambda call: call.data.startswith(DEL_PREFIX),
     )

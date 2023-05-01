@@ -1,3 +1,5 @@
+""" Module with bot and token"""
+
 import telebot  # type: ignore
 from django.conf import settings  # type: ignore
 

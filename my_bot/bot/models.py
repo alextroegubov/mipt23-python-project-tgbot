@@ -1,7 +1,10 @@
+""" Module with models"""
+
 from django.db import models  # type: ignore
 
 
 class User(models.Model):  # type: ignore
+    """ User module"""
     username = models.CharField(
         verbose_name='Никнейм',
         max_length=20
@@ -20,6 +23,7 @@ class User(models.Model):  # type: ignore
 
 
 class WordRecord(models.Model):  # type: ignore
+    """ Word record module"""
     user = models.ForeignKey(
         to='bot.User',
         verbose_name='Пользователь',
@@ -44,6 +48,7 @@ class WordRecord(models.Model):  # type: ignore
 
 
 class LessonRecord(models.Model):  # type: ignore
+    """ Lesson record module"""
     user = models.ForeignKey(
         to='bot.User',
         verbose_name='Пользователь',
@@ -64,6 +69,7 @@ class LessonRecord(models.Model):  # type: ignore
 
 
 class GameRecord(models.Model):  # type: ignore
+    """ Game record module """
     user = models.ForeignKey(
         to='bot.User',
         verbose_name='Пользователь',

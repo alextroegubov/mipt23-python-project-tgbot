@@ -1,8 +1,11 @@
+""" Validators, common keyboards"""
+
 from datetime import datetime
 from telebot import types  # type: ignore
 
 
 def date_validator(data_text: str) -> bool:
+    """ Validate date"""
     try:
         datetime.strptime(data_text, '%d.%m.%Y')
     except ValueError:
@@ -12,14 +15,16 @@ def date_validator(data_text: str) -> bool:
 
 
 def date_str_to_django(data_text: str) -> str:
+    """Convert str to django str"""
 
     assert date_validator(data_text)
-    d = datetime.strptime(data_text, '%d.%m.%Y')
+    date = datetime.strptime(data_text, '%d.%m.%Y')
 
-    return d.strftime('%Y-%m-%d %H:%M')
+    return date.strftime('%Y-%m-%d %H:%M')
 
 
 def date_django_to_str(date: str) -> str:
+    """Convert django str to user str"""
     return datetime.strptime(date, '%Y-%m-%d %H:%M').strftime('%d-%m-%Y')
 
 
@@ -52,8 +57,8 @@ def get_yes_no_inline_keyboard(prefix: str, yes_text: str, no_text: str
     return ikbm
 
 
-start_menu_prefix = "start_menu_keyboard_"
-start_text = "Давай продолжим изучать английский 🧠"
+START_MENU_PREFIX = "start_menu_keyboard_"
+START_TEXT = "Давай продолжим изучать английский 🧠"
 
 
 def start_menu() -> types.InlineKeyboardMarkup:
@@ -63,19 +68,19 @@ def start_menu() -> types.InlineKeyboardMarkup:
     ikbm.add(
         types.InlineKeyboardButton(
             text='Добавить новое слово',
-            callback_data=start_menu_prefix + 'addword'
+            callback_data=START_MENU_PREFIX + 'addword'
         ),
         types.InlineKeyboardButton(
             text='Записать урок',
-            callback_data=start_menu_prefix + 'addlesson'
+            callback_data=START_MENU_PREFIX + 'addlesson'
         ),
         types.InlineKeyboardButton(
             text='Повторять слова',
-            callback_data=start_menu_prefix + 'game'
+            callback_data=START_MENU_PREFIX + 'game'
         ),
         types.InlineKeyboardButton(
             text='Статистика',
-            callback_data=start_menu_prefix + 'stat'
+            callback_data=START_MENU_PREFIX + 'stat'
         )
     )
 

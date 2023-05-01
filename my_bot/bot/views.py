@@ -4,13 +4,15 @@ import telebot  # type: ignore
 from bot.main_bot import bot
 from bot.handlers import reg, start, addword, addlesson, stat, delete
 
+
 def index(request: HttpRequest) -> HttpResponse:
-    #if request.method == "POST":
+    # if request.method == "POST":
     if request.META['CONTENT_TYPE'] == 'application/json':
         update = telebot.types.Update.de_json(request.body.decode('utf-8'))
         bot.process_new_updates([update])
 
         return HttpResponse("")
+
 
 reg.register_handler_reg()
 start.register_handler_start()

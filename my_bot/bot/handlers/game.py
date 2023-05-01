@@ -1,17 +1,15 @@
+""" Module for game command """
 import random
-from telebot import types  # type: ignore
-from typing import Dict
+from typing import Dict, List
 from dataclasses import dataclass
-from typing import List
 from functools import partial
+
+from telebot import types  # type: ignore
 
 from bot.main_bot import bot
 from bot.models import User, WordRecord, GameRecord
-from bot.utils import start_menu, start_text
+from bot.utils import start_menu
 
-# prefixes for callback queris
-select_prefix = 'select_game_inline_keyboard_'
-confirm_prefix = 'confirm_game_inline_keyabord_'
 
 CONST_N_CHOICES = 5
 
@@ -25,7 +23,8 @@ class GameMetaData():
     words: List[int]
 
     def __init__(
-        self, words: List[int] = [],
+        self,
+        words: List[int],
         n_questions: int = 10,
         n_asked_questions: int = 0,
         n_right_questions: int = 0
@@ -46,11 +45,9 @@ def act_on_game_command(u_id: int) -> None:
     n_words = WordRecord.objects.count()
     if n_words < CONST_N_CHOICES:
         text = (f"В словаре слишком мало слов ({n_words}) 😓 "
-                 "Должно быть <u>минимум 5 слов</u>.")
+                "Должно быть <u>минимум 5 слов</u>.")
         bot.send_message(u_id, text=text, parse_mode='HTML')
         return
-
-    global g_game_user_data
 
     user = User.objects.get(external_id=u_id)
     text = "Давай повторять английские слова 🧠"
@@ -71,18 +68,17 @@ def act_on_game_command(u_id: int) -> None:
 
 def get_keyboard_markup(translations: List[str]) -> types.ReplyKeyboardMarkup:
     """ Keyboard markup with answers"""
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
 
     for translation in translations:
         btn = types.KeyboardButton(translation)
-        kb.add(btn)
+        keyboard.add(btn)
 
-    return kb
+    return keyboard
 
 
 def ask_word_ru_translation(u_id: int) -> None:
     """ Ask for translation"""
-    global g_game_user_data
 
     game = g_game_user_data[u_id]
 
@@ -102,8 +98,9 @@ def ask_word_ru_translation(u_id: int) -> None:
     choices.extend([word.ru_translation])
 
     text = f'Как переводится <i>{word.en_word}</i>?'
-    kb = get_keyboard_markup(choices)
-    msg = bot.send_message(u_id, text=text, reply_markup=kb, parse_mode='HTML')
+    keyboard = get_keyboard_markup(choices)
+    msg = bot.send_message(
+        u_id, text=text, reply_markup=keyboard, parse_mode='HTML')
 
     bot.register_next_step_handler(
         msg,
@@ -113,11 +110,10 @@ def ask_word_ru_translation(u_id: int) -> None:
 
 def check_choice(right_answer: str, u_id: int, message: types.Message) -> None:
     """ Check the answer and add score"""
-    global g_game_user_data
     game = g_game_user_data[u_id]
 
     if message.text == right_answer:
-        text = f'Верно ✅'
+        text = 'Верно ✅'
         game.n_right_questions += 1
     else:
         text = f'Неверно ❌, правильный ответ <i>{right_answer}</i>'
@@ -137,7 +133,6 @@ def check_choice(right_answer: str, u_id: int, message: types.Message) -> None:
 
 def send_score(u_id: int) -> None:
     """ Send score in chat and save it in db"""
-    global g_game_user_data
 
     game = g_game_user_data[u_id]
     user = User.objects.get(external_id=u_id)
@@ -155,4 +150,3 @@ def send_score(u_id: int) -> None:
 
     GameRecord(user=user, n_questions=game.n_asked_questions,
                n_answers=game.n_right_questions).save()
-

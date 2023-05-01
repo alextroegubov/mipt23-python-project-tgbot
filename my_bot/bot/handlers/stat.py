@@ -1,12 +1,13 @@
+""" Module for statistics command"""
+from datetime import datetime, date, timedelta
 from telebot import types  # type: ignore
 from telebot.types import InlineKeyboardButton  # type: ignore
-from datetime import datetime, date, timedelta
 
 from bot.main_bot import bot
 from bot.models import User, LessonRecord, WordRecord
-from bot.utils import start_menu, start_text
+from bot.utils import start_menu, START_TEXT
 
-stat_prefix = 'stat_inline_keyboard_'
+STAT_PREFIX = 'stat_inline_keyboard_'
 
 
 def get_stat_inline_keyboard() -> types.InlineKeyboardMarkup:
@@ -16,16 +17,16 @@ def get_stat_inline_keyboard() -> types.InlineKeyboardMarkup:
     ikbm.add(
         InlineKeyboardButton(
             text='Уроки за 30 дней',
-            callback_data=stat_prefix + 'lessons_30_days'
+            callback_data=STAT_PREFIX + 'lessons_30_days'
         ),
         InlineKeyboardButton(
             text='Последние 10 слов',
-            callback_data=stat_prefix + 'recent_10_words'
+            callback_data=STAT_PREFIX + 'recent_10_words'
 
         ),
         InlineKeyboardButton(
             text='Число слов за месяц',
-            callback_data=stat_prefix + 'words_month'
+            callback_data=STAT_PREFIX + 'words_month'
         )
     )
 
@@ -43,14 +44,14 @@ def act_on_stat_command(u_id: int) -> None:
 
 def callback_on_stat_command(call: types.CallbackQuery) -> None:
     """ Callback on statistics command"""
-    assert call.data.startswith(stat_prefix)
+    assert call.data.startswith(STAT_PREFIX)
 
     today = datetime(year=date.today().year,
                      month=date.today().month, day=date.today().day)
 
     u_id = call.message.chat.id
     user = User.objects.get(external_id=u_id)
-    answer = call.data[len(stat_prefix):]
+    answer = call.data[len(STAT_PREFIX):]
 
     if answer == 'lessons_30_days':
         start_date = today - timedelta(days=30)
@@ -79,19 +80,21 @@ def callback_on_stat_command(call: types.CallbackQuery) -> None:
         last_ten_words = WordRecord.objects.filter(
             user=user).order_by('added_at')[:n_words:-1]
         text = ''.join(
-            [f'<b>{w.en_word}</b> = {w.ru_translation} [<i>{w.comment}</i>]\n' for w in last_ten_words])
+            [f'<b>{w.en_word}</b> = {w.ru_translation} [<i>{w.comment}</i>]\n'
+             for w in last_ten_words])
 
         if text == '':
             bot.send_message(u_id, text='Пока что словарь пустой...')
         else:
             bot.send_message(u_id, text=text, parse_mode='HTML')
 
-    bot.send_message(u_id, text=start_text, parse_mode='HTML', reply_markup=start_menu())
+    bot.send_message(u_id, text=START_TEXT, parse_mode='HTML',
+                     reply_markup=start_menu())
 
 
 def register_stat_handler() -> None:
     """ Register handlers for stat command"""
     bot.register_callback_query_handler(
         callback_on_stat_command,
-        lambda call: call.data.startswith(stat_prefix),
+        lambda call: call.data.startswith(STAT_PREFIX),
     )

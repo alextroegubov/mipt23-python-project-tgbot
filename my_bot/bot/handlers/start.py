@@ -1,16 +1,15 @@
+""" Module for start command"""
 from telebot import types  # type: ignore
 
 from bot.models import User
 from bot.main_bot import bot
 
-from bot.utils import start_menu, start_menu_prefix
+from bot.utils import start_menu, START_MENU_PREFIX
 
 from bot.handlers.addword import act_on_addword_command
 from bot.handlers.addlesson import act_on_addlesson_command
 from bot.handlers.game import act_on_game_command
 from bot.handlers.stat import act_on_stat_command
-
-
 
 
 def act_on_start_command(message: types.Message) -> None:
@@ -37,10 +36,10 @@ def act_on_start_command(message: types.Message) -> None:
 
 def callback_on_start_menu(call: types.CallbackQuery) -> None:
     """ Callback on menu"""
-    assert call.data.startswith(start_menu_prefix)
+    assert call.data.startswith(START_MENU_PREFIX)
 
     u_id = call.message.chat.id
-    answer = call.data[len(start_menu_prefix):]
+    answer = call.data[len(START_MENU_PREFIX):]
 
     if answer == 'addword':
         act_on_addword_command(u_id)
@@ -60,5 +59,5 @@ def register_handler_start() -> None:
         callback=act_on_start_command, commands=['start'])
     bot.register_callback_query_handler(
         callback=callback_on_start_menu,
-        func=lambda call: call.data.startswith(start_menu_prefix)
+        func=lambda call: call.data.startswith(START_MENU_PREFIX)
     )
