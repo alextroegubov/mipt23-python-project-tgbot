@@ -3,6 +3,7 @@ import telebot  # type: ignore
 
 from bot.main_bot import bot
 from bot.handlers import reg, start, addword, addlesson, stat, delete
+from bot.handlers import help as help_module
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -20,5 +21,6 @@ addword.register_handler_addword()
 addlesson.register_handler_addlesson()
 stat.register_stat_handler()
 delete.register_del_handler()
+help_module.register_help_handler()
 
 bot.polling(non_stop=True)
