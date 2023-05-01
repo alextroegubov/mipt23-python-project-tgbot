@@ -1,5 +1,5 @@
 import random
-from telebot import types
+from telebot import types  # type: ignore
 from typing import Dict
 from dataclasses import dataclass
 from typing import List
@@ -40,7 +40,7 @@ class GameMetaData():
 g_game_user_data: Dict[int, GameMetaData] = {}
 
 
-def act_on_game_command(u_id) -> None:
+def act_on_game_command(u_id: int) -> None:
     """ Handler for game command"""
 
     n_words = WordRecord.objects.count()

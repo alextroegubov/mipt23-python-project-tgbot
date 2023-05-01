@@ -1,5 +1,5 @@
-from telebot import types
-from telebot.types import InlineKeyboardButton
+from telebot import types  # type: ignore
+from telebot.types import InlineKeyboardButton  # type: ignore
 from datetime import datetime, date, timedelta
 
 from bot.main_bot import bot

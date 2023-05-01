@@ -1,4 +1,4 @@
-from telebot import types
+from telebot import types  # type: ignore
 from typing import Dict
 
 from bot.main_bot import bot
@@ -151,7 +151,7 @@ def confirm_add_word(u_id: int) -> None:
     bot.send_message(u_id, text=text, reply_markup=kb, parse_mode='HTML')
 
 
-def callback_on_cofirm_add_word(call: types.CallbackQuery):
+def callback_on_cofirm_add_word(call: types.CallbackQuery) -> None:
     """ Callback on confirmation question"""
     assert call.data.startswith(confirm_prefix)
     global g_input_user_data

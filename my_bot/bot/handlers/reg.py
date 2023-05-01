@@ -1,6 +1,6 @@
 from bot.main_bot import bot
 from bot.models import User
-from telebot import types
+from telebot import types  # type: ignore
 
 from bot.utils import start_menu, start_text
 

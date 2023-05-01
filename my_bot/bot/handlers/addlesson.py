@@ -1,4 +1,4 @@
-from telebot import types
+from telebot import types  # type: ignore
 from typing import Dict
 
 from bot.main_bot import bot
