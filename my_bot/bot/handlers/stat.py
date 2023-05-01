@@ -5,7 +5,7 @@ from telebot.types import InlineKeyboardButton  # type: ignore
 
 from bot.main_bot import bot
 from bot.models import User, LessonRecord, WordRecord
-from bot.utils import start_menu, START_TEXT
+from bot.utils import start_menu, START_TEXT, date_django_to_str
 
 STAT_PREFIX = 'stat_inline_keyboard_'
 
@@ -58,7 +58,9 @@ def callback_on_stat_command(call: types.CallbackQuery) -> None:
         lessons = LessonRecord.objects.filter(
             date__date__gt=start_date) & LessonRecord.objects.filter(user=user)
         text = ''.join(
-            [f'<b>{l.date}</b>: {l.duration} (минуты) [<i>{l.comment}</i>]\n' for l in lessons])
+            [f'<b>{l.date.strftime("%d-%m-%Y")}</b>: {l.duration} (минуты) [<i>{l.comment}</i>]\n' 
+             for l in lessons]
+        )
 
         if text == '':
             bot.send_message(
