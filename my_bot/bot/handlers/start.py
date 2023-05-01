@@ -1,8 +1,8 @@
+from telebot import types
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 from bot.models import User
 from bot.main_bot import bot
-from telebot import types
-
-from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot.handlers.addword import act_on_addword_command
 from bot.handlers.addlesson import act_on_addlesson_command
@@ -11,8 +11,10 @@ from bot.handlers.stat import act_on_stat_command
 
 start_menu_prefix = 'start_menu_keyboard_'
 
+
 def start_menu() -> InlineKeyboardMarkup:
-    ikbm = InlineKeyboardMarkup()
+    """Start menu keyboard"""
+    ikbm = InlineKeyboardMarkup(row_width=1)
 
     ikbm.add(
         InlineKeyboardButton(
@@ -35,6 +37,7 @@ def start_menu() -> InlineKeyboardMarkup:
 
     return ikbm
 
+
 def act_on_start_command(message: types.Message) -> None:
     """ Primary handler for /start command"""
 
@@ -42,7 +45,7 @@ def act_on_start_command(message: types.Message) -> None:
         user = User.objects.get(external_id=message.from_user.id)
         bot.send_message(
             message.from_user.id,
-            f"Hi, <b>{user.username}</b>✌️ Let's continue learning English 🧠",
+            f"Привет, <b>{user.username}</b>✌️ Давай продолжим изучать английский 🧠",
             parse_mode='HTML',
             reply_markup=start_menu()
         )
@@ -50,14 +53,15 @@ def act_on_start_command(message: types.Message) -> None:
     else:
         bot.send_message(
             message.from_user.id,
-            (f"Hi, <b>{message.from_user.username}</b>✌️, I am a telegram bot🤖\n"
-             "I can help you study English words🤓 "
-             "Please register to continue. /reg"),
+            (f"Привет, <b>{message.from_user.username}</b> ✌️, я телеграм-бот🤖\n"
+             "Я могу помочь тебе в изучении английских слов 🤓 "
+             "Пожалуйста, зарегистрируйся /reg"),
             parse_mode='HTML'
         )
 
 
 def callback_on_start_menu(call: types.CallbackQuery) -> None:
+    """ Callback on menu"""
     assert call.data.startswith(start_menu_prefix)
 
     u_id = call.message.chat.id
@@ -73,6 +77,7 @@ def callback_on_start_menu(call: types.CallbackQuery) -> None:
         act_on_stat_command(u_id)
     else:
         bot.send_message(u_id, 'smth wrong')
+
 
 def register_handler_start() -> None:
     """ Register handlers for /start command"""

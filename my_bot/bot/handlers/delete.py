@@ -1,6 +1,6 @@
+from telebot import types
 from bot.main_bot import bot
 from bot.models import User, LessonRecord, WordRecord
-from telebot import types
 
 del_prefix = 'del_inline_keyboard_'
 
@@ -11,11 +11,11 @@ def get_del_inline_keyboard() -> types.InlineKeyboardMarkup:
 
     ikbm.add(
         types.InlineKeyboardButton(
-            text='Yes, delete it 👹',
+            text='Да, сноси 👹',
             callback_data=del_prefix + 'yes'
         ),
         types.InlineKeyboardButton(
-            text='No, keep it 😫',
+            text='Нет, оставь 😫',
             callback_data=del_prefix + 'no'
         )
     )
@@ -29,11 +29,11 @@ def act_on_del_command(message: types.Message) -> None:
     u_id = message.from_user.id
 
     if not User.objects.filter(external_id=u_id):
-        text = "Please, register first. /reg"
+        text = "У вас еще нет профиля 😅. Сначала зарегистрируйтесь /reg"
         bot.send_message(u_id, text=text)
         return
 
-    text = "Are you sure to delete your profile?😱"
+    text = "Уверены, что хотите удалить профиль?😱"
     ikbm = get_del_inline_keyboard()
 
     bot.send_message(u_id, text=text, reply_markup=ikbm)
@@ -52,12 +52,10 @@ def callback_on_del_command(call: types.CallbackQuery) -> None:
         WordRecord.objects.filter(user=user).delete()
         user.delete()
 
-        bot.send_message(u_id, text='Your profile has been deleted 😵')
+        bot.send_message(u_id, text='Ваш профиль удален 😵')
 
     elif answer == 'no':
-        bot.send_message(u_id, text="Nice 😪 Let's learn English then 🙃")
-    else:
-        bot.send_message(u_id, text='smth wrong')
+        bot.send_message(u_id, text="Обошлось 😪 Давайте учить английский 🙃")
 
 
 def register_del_handler() -> None:
